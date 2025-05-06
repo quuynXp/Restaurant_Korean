@@ -1,0 +1,18 @@
+springdoc:
+  api-docs:
+    path: /api/users/v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+
+# Optional - để set info như title, description
+info:
+  title: Restaurant API
+  description: API for managing orders, menus, tables...
+  version: 1.0
+
+jwt:
+  signerKey: "1TjXchw5FloESb63Kc+FktpcvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij"
+  valid-duration: 3600 # in second
+  refreshable-duration: 36000 # in seconds

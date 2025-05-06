@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    restart: always
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    ports:
+      - "2181:2181"
+
+  mysql:
+    image: mysql:8.0.41
+    container_name: mysql-container
+    environment:
+      - MYSQL_ROOT_PASSWORD=12345678
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./my.cnf:/etc/mysql/conf.d/my.cnf
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    restart: always
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    depends_on:
+      - zookeeper
+
+  redis:
+    image: redis:7.2
+    container_name: redis
+    ports:
+      - "6379:6379"
+    command: [ "redis-server", "--appendonly", "yes" ]
+    volumes:
+      - redis-data:/data
+
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.1
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node  # Chạy 1 node để dev/test
+      - xpack.security.enabled=false # Tắt security cho đơn giản
+    ports:
+      - "9200:9200"  # Cổng để ứng dụng Spring truy cập
+      - "9300:9300"  # Dùng cho cluster nội bộ (ít dùng trong dev)
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+
+volumes:
+  esdata:
+  redis-data:
